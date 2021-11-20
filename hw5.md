@@ -141,3 +141,85 @@ results_df %>%
 ```
 
 ![](hw5_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+#Problem 3
+
+``` r
+set.seed(10)
+
+iris_with_missing = iris %>% 
+  map_df(~replace(.x, sample(1:150, 20), NA)) %>%
+  mutate(Species = as.character(Species))
+```
+
+There are two cases to address:
+
+(1)numeric variables: fill in missing values with the mean of
+non-missing values (2) character variables:fill in missing values with
+“virginica”
+
+Write a function that takes a vector as an argument; replaces missing
+values using the rules defined above; and returns the resulting vector.
+
+Let’s try to write a function first to replace the missing value…
+
+``` r
+#refer to the example of mean_and_sd in lecture
+missing_value = function(vector){
+  if(is.character(vector)){
+    # tidyr::replace_na(), which replaces an NA value with a specified value
+    vector = replace_na(vector, "virginica")
+    return(vector)}
+}
+#if(!is.numeric(vector) & ) {
+```
+
+lets try to map the function
+
+``` r
+map(iris_with_missing,missing_value)
+```
+
+    ## $Sepal.Length
+    ## NULL
+    ## 
+    ## $Sepal.Width
+    ## NULL
+    ## 
+    ## $Petal.Length
+    ## NULL
+    ## 
+    ## $Petal.Width
+    ## NULL
+    ## 
+    ## $Species
+    ##   [1] "setosa"     "setosa"     "setosa"     "setosa"     "setosa"    
+    ##   [6] "setosa"     "setosa"     "setosa"     "setosa"     "setosa"    
+    ##  [11] "setosa"     "setosa"     "setosa"     "setosa"     "setosa"    
+    ##  [16] "setosa"     "setosa"     "setosa"     "setosa"     "setosa"    
+    ##  [21] "setosa"     "virginica"  "setosa"     "setosa"     "virginica" 
+    ##  [26] "setosa"     "virginica"  "setosa"     "setosa"     "setosa"    
+    ##  [31] "setosa"     "setosa"     "setosa"     "setosa"     "setosa"    
+    ##  [36] "setosa"     "setosa"     "setosa"     "setosa"     "setosa"    
+    ##  [41] "setosa"     "virginica"  "setosa"     "setosa"     "setosa"    
+    ##  [46] "virginica"  "setosa"     "setosa"     "setosa"     "setosa"    
+    ##  [51] "virginica"  "versicolor" "versicolor" "versicolor" "versicolor"
+    ##  [56] "versicolor" "virginica"  "versicolor" "virginica"  "versicolor"
+    ##  [61] "versicolor" "versicolor" "versicolor" "versicolor" "versicolor"
+    ##  [66] "versicolor" "versicolor" "versicolor" "versicolor" "versicolor"
+    ##  [71] "versicolor" "virginica"  "versicolor" "versicolor" "versicolor"
+    ##  [76] "versicolor" "versicolor" "versicolor" "versicolor" "virginica" 
+    ##  [81] "versicolor" "versicolor" "versicolor" "versicolor" "versicolor"
+    ##  [86] "versicolor" "versicolor" "versicolor" "versicolor" "versicolor"
+    ##  [91] "versicolor" "versicolor" "versicolor" "virginica"  "versicolor"
+    ##  [96] "versicolor" "versicolor" "versicolor" "versicolor" "virginica" 
+    ## [101] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [106] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [111] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [116] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [121] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [126] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [131] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [136] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [141] "virginica"  "virginica"  "virginica"  "virginica"  "virginica" 
+    ## [146] "virginica"  "virginica"  "virginica"  "virginica"  "virginica"

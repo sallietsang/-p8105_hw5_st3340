@@ -96,3 +96,36 @@ results_df %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
 
+
+#Problem 3
+```{r}
+set.seed(10)
+
+iris_with_missing = iris %>% 
+  map_df(~replace(.x, sample(1:150, 20), NA)) %>%
+  mutate(Species = as.character(Species))
+```
+There are two cases to address:
+
+(1)numeric variables: fill in missing values with the mean of non-missing values
+(2) character variables:fill in missing values with "virginica"
+
+Write a function that takes a vector as an argument; replaces missing values using the rules defined above; and returns the resulting vector. 
+
+Let's try to write a function first to replace the missing value...
+```{r}
+#refer to the example of mean_and_sd in lecture
+missing_value = function(vector){
+  if(is.character(vector)){
+    # tidyr::replace_na(), which replaces an NA value with a specified value
+    vector = replace_na(vector, "virginica")
+    return(vector)}
+}
+#if(!is.numeric(vector) & ) {
+```
+lets try to map the function
+
+```{r}
+map(iris_with_missing,missing_value)
+```
+
