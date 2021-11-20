@@ -19,7 +19,8 @@ library("tidyverse")
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
-library(purrr)
+library("purrr")
+library("readxl")
 ```
 
 #Problem 1
@@ -141,6 +142,20 @@ results_df %>%
 ```
 
 ![](hw5_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+#Problem 2 Data for each participant is included in a separate file, and
+file names include the subject ID and arm. Create a tidy dataframe
+containing data from all participants, including the subject ID, arm,
+and observations over time
+
+Start with a dataframe containing all file names; the list.files
+function will help
+
+``` r
+#list.files function lists all the name of the file 
+df_with_names = tibble (
+  files = list.files("./data"))
+```
 
 #Problem 3
 
