@@ -5,8 +5,88 @@ date: "11/20/2021"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r load library}
+library("tidyverse")
+library(purrr)
 ```
 
+
+#Problem 1 
+
+```{r}
+#drop the cells with unknown or blank
+homicide_df = read_csv("homicide_data.csv", na = c("","Unknown"))
+ homicide_df = homicide_df %>%
+   mutate(      #combind city and state together for easy reading 
+     city_state = str_c(city, state),
+      resolution = case_when(
+      disposition == "Closed without arrest" ~ "unsolved",
+      disposition == "Open/No arrest" ~ "unsolved",
+      disposition == "Closed by arrest" ~ "solved")) %>% 
+   relocate(city_state)%>% 
+  filter(city_state != "TulsaAL")
+```
+Lets focus on baltimore first...
+```{r}
+baltimore_df = 
+  homicide_df %>% 
+  filter(city_state == "BaltimoreMD") 
+baltimore_summary = 
+baltimore_df %>% 
+  summarize(
+    unsolved = sum(resolution == "unsolved"), 
+    n = n()
+  )
+baltimore_test = 
+prop.test(
+  x = baltimore_summary %>% pull(unsolved),
+  n = baltimore_summary %>% pull(n)
+)
+baltimore_test %>% 
+  broom::tidy()
+```
+
+We'll iterate across cities. First, we write a function. 
+
+```{r}
+prop_test_function = function(city_df){
+city_summary = 
+city_df %>% 
+  summarize(
+    unsolved = sum(resolution == "unsolved"), 
+    n = n()
+  )
+city_test = 
+prop.test(
+  x = city_summary %>% pull(unsolved),
+  n = city_summary %>% pull(n)
+)
+return(city_test)
+}
+```
+
+Next, let's iterate across all cities.
+
+```{r}
+results_df = 
+  homicide_df %>% 
+  nest(data = uid:resolution) %>% 
+  mutate(test_results = map(data, prop_test_function), 
+         tidy_results = map(test_results, broom::tidy)
+         ) %>% 
+  select(city_state, tidy_results) %>% 
+  unnest(tidy_results) %>%
+  select(city_state, estimate, starts_with("conf"))
+```
+
+We'll make a plot showing estimates and confidence intervals. 
+
+```{r}
+results_df %>% 
+  mutate(city_state = fct_reorder(city_state, estimate)) %>% 
+  ggplot(aes(x = city_state, y = estimate)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
 
