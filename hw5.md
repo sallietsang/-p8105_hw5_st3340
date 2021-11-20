@@ -78,7 +78,7 @@ baltimore_test %>%
     ##      <dbl>     <dbl>    <dbl>     <int>    <dbl>     <dbl> <chr>     <chr>      
     ## 1    0.646      239. 6.46e-54         1    0.628     0.663 1-sample… two.sided
 
-We’ll iterate across cities. First, we write a function.
+We will iterate across cities. write a function first…..
 
 ``` r
 prop_test_function = function(city_df){
@@ -95,13 +95,31 @@ prop.test(
 )
 return(city_test)
 }
+
+#let's test if we can use the function..
+homicide_df %>% 
+  filter(city_state == "AlbuquerqueNM")%>% 
+  prop_test_function()
 ```
 
-Next, let’s iterate across all cities.
+    ## 
+    ##  1-sample proportions test with continuity correction
+    ## 
+    ## data:  city_summary %>% pull(unsolved) out of city_summary %>% pull(n), null probability 0.5
+    ## X-squared = 19.114, df = 1, p-value = 1.232e-05
+    ## alternative hypothesis: true p is not equal to 0.5
+    ## 95 percent confidence interval:
+    ##  0.3372604 0.4375766
+    ## sample estimates:
+    ##         p 
+    ## 0.3862434
+
+Now, let’s iterate across all cities.
 
 ``` r
 results_df = 
   homicide_df %>% 
+  #nest everything except of city_state 
   nest(data = uid:resolution) %>% 
   mutate(test_results = map(data, prop_test_function), 
          tidy_results = map(test_results, broom::tidy)
@@ -111,7 +129,7 @@ results_df =
   select(city_state, estimate, starts_with("conf"))
 ```
 
-We’ll make a plot showing estimates and confidence intervals.
+Make a plot showing estimates and confidence intervals.
 
 ``` r
 results_df %>% 

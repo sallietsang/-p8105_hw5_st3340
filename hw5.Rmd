@@ -46,7 +46,7 @@ baltimore_test %>%
   broom::tidy()
 ```
 
-We'll iterate across cities. First, we write a function. 
+We will iterate across cities.  write a function first..... 
 
 ```{r}
 prop_test_function = function(city_df){
@@ -63,13 +63,19 @@ prop.test(
 )
 return(city_test)
 }
+
+#let's test if we can use the function..
+homicide_df %>% 
+  filter(city_state == "AlbuquerqueNM")%>% 
+  prop_test_function()
 ```
 
-Next, let's iterate across all cities.
+Now, let's iterate across all cities.
 
 ```{r}
 results_df = 
   homicide_df %>% 
+  #nest everything except of city_state 
   nest(data = uid:resolution) %>% 
   mutate(test_results = map(data, prop_test_function), 
          tidy_results = map(test_results, broom::tidy)
@@ -79,7 +85,7 @@ results_df =
   select(city_state, estimate, starts_with("conf"))
 ```
 
-We'll make a plot showing estimates and confidence intervals. 
+Make a plot showing estimates and confidence intervals. 
 
 ```{r}
 results_df %>% 
