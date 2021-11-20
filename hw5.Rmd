@@ -120,12 +120,17 @@ missing_value = function(vector){
     # tidyr::replace_na(), which replaces an NA value with a specified value
     vector = replace_na(vector, "virginica")
     return(vector)}
+  else if(is.numeric(vector)){
+    vector = replace_na(vector, mean(vector, na.rm = TRUE))
+  }
 }
-#if(!is.numeric(vector) & ) {
 ```
-lets try to map the function
+lets try to map the function and save it in a new dataframe 
 
 ```{r}
-map(iris_with_missing,missing_value)
+map(iris_with_missing,missing_value) 
+#map variants, ref to Iteration and List Columns
+output = map_dfr(iris_with_missing,missing_value, .id = "input")
+
 ```
 
