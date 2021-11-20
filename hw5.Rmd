@@ -1,0 +1,12 @@
+---
+title: "hw5"
+author: "sze pui"
+date: "11/20/2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
