@@ -4,6 +4,14 @@ sze pui
 11/20/2021
 
 ``` r
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+```
+
+``` r
 library("tidyverse")
 ```
 
@@ -21,6 +29,7 @@ library("tidyverse")
 ``` r
 library("purrr")
 library("readxl")
+library("ggplot2")
 ```
 
 #Problem 1
@@ -141,7 +150,7 @@ results_df %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
 
-![](hw5_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+<img src="hw5_files/figure-gfm/unnamed-chunk-6-1.png" width="90%" />
 
 #Problem 2 Data for each participant is included in a separate file, and
 file names include the subject ID and arm. Create a tidy dataframe
@@ -375,8 +384,39 @@ tidy_data = df_with_names %>%
   #remove a specific word from a column using str_remove_all
    mutate(number = str_remove_all(number,".csv"),
           #example: fct_recode(x, fruit = "apple", fruit = "banana")
-         file_type = recode(file_type ,con = "control", exp= "experimental") )
+         file_type = recode(file_type ,con = "control", exp= "experimental") )%>% 
+  pivot_longer(
+    week_1:week_8, 
+    names_to ="week",
+    #remove the repetative "week_" in every cell
+    names_prefix = "week_",
+    values_to = "values"
+  )
 ```
+
+Make a spaghetti plot showing observations on each subject over time
+
+``` r
+tidy_data %>% 
+  group_by(file_type, number) %>% 
+  ggplot(aes(x = week, y = values)) + 
+  geom_point(aes(color = week), alpha = .5)+ 
+  #in order to compare the difference between control and experimental 
+  #we can seperate it into two graph
+  facet_grid(.~file_type)+
+  geom_line()+ 
+  labs( title = "observations on each subject over time",
+    x = "time(week)",
+    y = "observationn")
+```
+
+<img src="hw5_files/figure-gfm/unnamed-chunk-10-1.png" width="90%" />
+
+comment on differences between groups: There tends to be a increasing
+trend of values over the weeks for the experimental group , meanwhile
+there is obvious increasing or decreasing trend for the control
+group.The relationship between time and value on experimental group can
+be further by using the simple linear regression.
 
 #Problem 3
 
