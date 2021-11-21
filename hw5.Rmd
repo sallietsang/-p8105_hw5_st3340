@@ -101,12 +101,40 @@ results_df %>%
 Data for each participant is included in a separate file, and file names include the subject ID and arm.
 Create a tidy dataframe containing data from all participants, including the subject ID, arm, and observations over time
 
-Start with a dataframe containing all file names; the list.files function will help
+
 ```{r}
+files = list.files("./data")
+
+#Start with a dataframe containing all file names
 #list.files function lists all the name of the file 
 df_with_names = tibble (
   files = list.files("./data"))
 ```
+
+Iterate over file names and read in data for each subject 
+```{r}
+df_with_names  = df_with_names %>% 
+  #use mutate to keep the original data and save it as a new variable
+   mutate(all_file =map(.x = str_c("./data/", files),~read_csv(.x)))%>%
+#we have to unnest them since it is nested in the all_file column
+  unnest(cols = all_file)
+```
+
+Lets tidy the data.
+```{r}
+tidy_data = df_with_names %>% 
+   separate(files, into = c("file_type", "number"), sep = "_") %>% 
+  #remove a specific word from a column using str_remove_all
+   mutate(number = str_remove_all(number,".csv"),
+          #example: fct_recode(x, fruit = "apple", fruit = "banana")
+         file_type = recode(file_type ,con = "control", exp= "experimental") )
+
+  
+```
+
+
+
+
 
 #Problem 3
 ```{r}
