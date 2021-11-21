@@ -452,7 +452,7 @@ missing_value = function(vector){
 }
 ```
 
-lets try to map the function and save it in a new dataframe
+let’s try to map the function and save it in a new dataframe
 
 ``` r
 map(iris_with_missing,missing_value) 
